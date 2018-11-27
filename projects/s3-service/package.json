@@ -1,0 +1,27 @@
+{
+  "name"        : "@caliatys/cognito-service",
+  "description" : "Typescript service for AWS S3 with Angular",
+  "version"     : "1.0.0",
+  "author"      : "Nicolas Roehm <nicolas.roehm@gmail.com>",
+  "license"     : "MIT",
+  "private"     : false,
+  "keywords"    : [
+    "aws",
+    "s3",
+    "bucket",
+    "angular",
+    "service",
+    "typescript",
+    "javascript"
+  ],
+  "peerDependencies"  : {
+    "@angular/common" : "^6.0.0 || ^7.0.0",
+    "@angular/core"   : "^6.0.0 || ^7.0.0",
+    "rxjs"            : "^6.0.0",
+    "rxjs-compat"     : "^6.0.0",
+    "aws-sdk"         : "^2.247.1"
+  },
+  "devDependencies"   : {
+    "@types/node"     : "10.12.0"
+  }
+}

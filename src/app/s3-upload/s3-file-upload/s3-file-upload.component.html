@@ -1,0 +1,39 @@
+<!-- NOTE: Ngx s3 upload : https://github.com/tensult/ngx-s3-upload -->
+<div [ngClass]="{'file-row no-gutters': true, row: true, odd: oddRow}">
+  <!-- NOTE: Name -->
+  <div class="col-6">
+    <p class="name mb-0">{{ fileObject.file.name }}</p>
+  </div>
+  <!-- NOTE: Size -->
+  <div class="col-6 text-right">
+    <p class="size mb-0">{{ fileObject.file.size | fileSize }}</p>
+  </div>
+  <!-- NOTE: State -->
+  <div class="col-12">
+    <p class="mb-0" [ngClass]="{'text-primary': fileObject.status === FileObjectStatus.UPLOADING, 'text-success': fileObject.status === FileObjectStatus.UPLOADED, 'text-danger': fileObject.status === FileObjectStatus.FAILED}">
+      <strong *ngIf="fileObject.status !== FileObjectStatus.NOT_STARTED" [ngClass]="{'error': fileObject.status === FileObjectStatus.FAILED}">
+        {{ FileObjectStatus[fileObject.status] | translate }}
+      </strong>
+    </p>
+    <strong class="error text-danger">{{ uploadError }}</strong>
+  </div>
+  <!-- NOTE: Progress bar -->
+  <div class="col-12 py-3">
+    <div class="progress">
+      <div [ngClass]="{'progress-bar': true, 'progress-bar-striped': true, 'progress-bar-success': fileObject.status !== FileObjectStatus.FAILED, 'progress-bar-danger': fileObject.status === FileObjectStatus.FAILED }"
+        role="progressbar" [ngStyle]="{'width': progress + '%'}" aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100">
+        <strong *ngIf="progress > 0">{{ progress }}%</strong>
+      </div>
+    </div>
+    <p *ngIf="fileObject.status === FileObjectStatus.UPLOADING" class="speed">{{ speed | fileSize }}/s</p>
+  </div>
+  <!-- NOTE: Actions -->
+  <div class="col-12 text-center">
+    <button [disabled]="fileObject.status === FileObjectStatus.UPLOADING || fileObject.status === FileObjectStatus.UPLOADED" (click)="upload()" mat-flat-button class="text-uppercase">
+      {{ 'START' | translate }}
+    </button>
+    <button [disabled]="fileObject.status === FileObjectStatus.UPLOADING" (click)="clear()" mat-flat-button color="accent" class="delete-button text-uppercase">
+      {{ 'CLEAR' | translate }}
+    </button>
+  </div>
+</div>

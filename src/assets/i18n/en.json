@@ -1,0 +1,15 @@
+{
+  "ERROR_USR_REQUIRED"           : "The username field is required",
+  "ERROR_LOGIN_FAILED"           : "Login failed, please correct your username or password",
+  "ERROR_INCORRECT_USER"         : "Your username is incorrect",
+  "ERROR_FORGOT_PWD_VERIF_INIT"  : "Cannot reset password for the user as there is no registered/verified username",
+  "ERROR_VERIF_LIMIT"            : "Attempt limit exceeded, please try after some time",
+  "ERROR_VERIF_AUTHORIZATION"    : "Authorization exception, please contact your administrator",
+  "ERROR_VERIF_CODE"             : "Invalid verification code provided, please try again",
+  "ERROR_AMAZON_POLICY"          : "Violation of Amazon's policy options, please read them carefully",
+  "SUCCESS_UPDATE_PWD"           : "Password successfully updated",
+
+  "NOT_FOUND"        : "404 - Page not found",
+  "GO_TO_HOMEPAGE"   : "Go to homepage",
+  "GO_TO_LOGIN_PAGE" : "Go to login page"
+}

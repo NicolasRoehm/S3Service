@@ -1,0 +1,11 @@
+<div>
+  <label>
+    <span>{{ 'ADD_FILE' | translate }}</span>
+    <input type="file" hidden name="files[]" multiple="" type="file" (change)="fileChangeEvent($event)">
+  </label>
+</div>
+<button type="button" class="btn btn-success" [disabled]="!files.length" (click)="uploadAll()">Upload all</button>
+<button type="button" class="btn btn-warning" [disabled]="!files.length" (click)="cancelAll()">Cancel all</button>
+<button type="button" class="btn btn-danger" [disabled]="!files.length" (click)="clearAll()">Clear all</button>
+<!-- NOTE: Files -->
+<s3-file-upload *ngFor="let file of files; let oddRow=odd;" [oddRow]="oddRow" [fileObject]="file"></s3-file-upload>
