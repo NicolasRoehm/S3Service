@@ -1,5 +1,5 @@
 {
-  "name"        : "@caliatys/cognito-service",
+  "name"        : "@caliatys/s3-service",
   "description" : "Typescript service for AWS S3 with Angular",
   "version"     : "1.0.0",
   "author"      : "Nicolas Roehm <nicolas.roehm@gmail.com>",

@@ -296,7 +296,6 @@ export class S3Service
 
   /**
    *
-   * @private
    * @param progressCallback - (error : Error, progress : number, speed : number) => void
    * @returns any
    * @memberof S3Service
@@ -322,7 +321,6 @@ export class S3Service
 
   /**
    *
-   * @private
    * @param progressCallback - (error : Error, progress : number, speed : number) => void
    * @returns any
    * @memberof S3Service
