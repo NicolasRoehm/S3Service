@@ -29,7 +29,7 @@ export class S3Service
   // SECTION: Object ---------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------
 
-  /**
+  /** Retrieves objects from Amazon S3.
    *
    * @param key - string
    * @param customParams - AWS.S3.GetObjectRequest = null
@@ -60,7 +60,7 @@ export class S3Service
     }));
   }
 
-  /**
+  /** Adds an object to a bucket.
    *
    * @param body - AWS.S3.Body
    * @param key - string
@@ -155,7 +155,94 @@ export class S3Service
     }));
   }
 
-  /**
+  /** This operation enables you to delete multiple objects from a bucket using a single HTTP request.
+   * You may specify up to 1000 keys.
+   *
+   * @param del - AWS.S3.Delete
+   * @param customParams - AWS.S3.DeleteObjectsRequest = null
+   * @returns Observable<any>
+   * @memberof S3Service
+   */
+  public deleteObjects(del : AWS.S3.Delete, customParams : AWS.S3.DeleteObjectsRequest = null) : Observable<any>
+  {
+    let defaultParams : AWS.S3.DeleteObjectsRequest = {
+      Bucket : this.bucket,
+      Delete : del
+    };
+    let params = Object.assign(defaultParams, customParams);
+
+    return from(new Promise((resolve, reject) =>
+    {
+      this.s3.deleteObjects(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectsOutput) =>
+      {
+        if(err)
+        {
+          console.error('S3Service : deleteObjects -> deleteObjects', err);
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    }));
+  }
+
+  /** Returns some or all (up to 1000) of the objects in a bucket.
+   * You can use the request parameters as selection criteria to return a subset of the objects in a bucket.
+   *
+   * @param customParams - AWS.S3.ListObjectsRequest = null
+   * @returns Observable<any>
+   * @memberof S3Service
+   */
+  public listObjects(customParams : AWS.S3.ListObjectsRequest = null) : Observable<any>
+  {
+    let defaultParams : AWS.S3.ListObjectsRequest = {
+      Bucket : this.bucket
+    };
+    let params = Object.assign(defaultParams, customParams);
+
+    return from(new Promise((resolve, reject) =>
+    {
+      this.s3.listObjects(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsOutput) =>
+      {
+        if(err)
+        {
+          console.error('S3Service : listObjects -> listObjects', err);
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    }));
+  }
+
+  /** Returns some or all (up to 1000) of the objects in a bucket.
+   * You can use the request parameters as selection criteria to return a subset of the objects in a bucket.
+   * Note: ListObjectsV2 is the revised List Objects API and we recommend you use this revised API for new application development.
+   *
+   * @param customParams - AWS.S3.ListObjectsV2Request = null
+   * @returns Observable<any>
+   * @memberof S3Service
+   */
+  public listObjectsV2(customParams : AWS.S3.ListObjectsV2Request = null) : Observable<any>
+  {
+    let defaultParams : AWS.S3.ListObjectsV2Request = {
+      Bucket : this.bucket
+    };
+    let params = Object.assign(defaultParams, customParams);
+
+    return from(new Promise((resolve, reject) =>
+    {
+      this.s3.listObjectsV2(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsV2Output) =>
+      {
+        if(err)
+        {
+          console.error('S3Service : listObjectsV2 -> listObjectsV2', err);
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    }));
+  }
+
+  /** Returns metadata about all of the versions of objects in a bucket.
    *
    * @param prefix - string
    * @param customParams - AWS.S3.ListObjectVersionsRequest = null
@@ -186,13 +273,44 @@ export class S3Service
     }));
   }
 
+  /** Restores an archived copy of an object back into Amazon S3
+   *
+   * @param key - string
+   * @param customParams - AWS.S3.RestoreObjectRequest = null
+   * @returns Observable<any>
+   * @memberof S3Service
+   */
+  public restoreObject(key : string, customParams : AWS.S3.RestoreObjectRequest = null) : Observable<any>
+  {
+    let defaultParams : AWS.S3.RestoreObjectRequest = {
+      Bucket : this.bucket,
+      Key    : key
+    };
+    let params = Object.assign(defaultParams, customParams);
+
+    return from(new Promise((resolve, reject) =>
+    {
+      this.s3.restoreObject(params, (err : AWS.AWSError, data : AWS.S3.RestoreObjectOutput) =>
+      {
+        if(err)
+        {
+          console.error('S3Service : restoreObject -> restoreObject', err);
+          return reject(err);
+        }
+        return resolve(data);
+      });
+    }));
+  }
+
   // !SECTION
 
   // -------------------------------------------------------------------------------------------
   // SECTION: Upload ---------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------
 
-  /**
+  /** Uploads an arbitrarily sized buffer, blob, or stream, using intelligent concurrent handling of parts if the payload is large enough.
+   * You can configure the concurrent queue size by setting options.
+   * Note that this is the only operation for which the SDK can retry requests with stream bodies.
    *
    * @param key - string
    * @param body - AWS.S3.Body
@@ -242,21 +360,15 @@ export class S3Service
    */
   public copyFolderWithObjects(copyFrom : string, copyTo : string) : Observable<any>
   {
-    let params : AWS.S3.ListObjectsRequest = {
+    let params : AWS.S3.ListObjectsV2Request = {
       Bucket : this.bucket,
       Prefix : copyFrom
     };
 
     return from(new Promise((resolve, reject) =>
     {
-      this.s3.listObjects(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsOutput) =>
+      this.listObjectsV2(params).subscribe(data =>
       {
-        if(err)
-        {
-          console.error('S3Service : copyFolderWithObjects -> listObjects',err);
-          return reject(err);
-        }
-
         if(data.Contents.length)
         {
           let promises : Promise<any>[] = [];
@@ -278,10 +390,12 @@ export class S3Service
         }
         else
         {
-          console.error('S3Service : copyFolder -> listObjects', 'Nothing found');
+          console.error('S3Service : copyFolder -> listObjectsV2', 'Nothing found');
           return reject();
         }
-
+      }, err => {
+        console.error('S3Service : copyFolderWithObjects -> listObjectsV2', err);
+        return reject(err);
       });
     }));
   }
@@ -337,10 +451,4 @@ export class S3Service
   }
 
   // !SECTION
-
-  private test() : void
-  {
-    // this.s3.
-  }
-
 }

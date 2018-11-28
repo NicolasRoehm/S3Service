@@ -8,4 +8,4 @@
 <button type="button" class="btn btn-warning" [disabled]="!files.length" (click)="cancelAll()">Cancel all</button>
 <button type="button" class="btn btn-danger" [disabled]="!files.length" (click)="clearAll()">Clear all</button>
 <!-- NOTE: Files -->
-<s3-file-upload *ngFor="let file of files; let oddRow=odd;" [oddRow]="oddRow" [fileObject]="file"></s3-file-upload>
+<app-s3-file-upload *ngFor="let file of files; let oddRow=odd;" [oddRow]="oddRow" [fileObject]="file"></app-s3-file-upload>

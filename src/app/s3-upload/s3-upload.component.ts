@@ -16,14 +16,14 @@ import { S3Helper } from '../shared/helpers/s3.helper';
 
 @Component({
   moduleId    : module.id,
-  selector    : 's3-upload',
+  selector    : 'app-s3-upload',
   templateUrl : 's3-upload.component.html',
   styleUrls   : ['s3-upload.component.scss']
 })
 export class S3UploadComponent implements OnInit, OnDestroy
 {
   // NOTE: Upload
-  public files         : FileObject[] = [];
+  // public files         : FileObject[] = [];
   public uploadStarted : boolean      = false;
 
   constructor
@@ -42,12 +42,12 @@ export class S3UploadComponent implements OnInit, OnDestroy
 
   public ngOnInit() : void
   {
-    this.uploadSub = this.uploadSubscription();
+    // this.uploadSub = this.uploadSubscription();
   }
 
   public ngOnDestroy() : void
   {
-    this.uploadSub.unsubscribe();
+    // this.uploadSub.unsubscribe();
   }
 
   public fileChangeEvent(fileInput : any) : void
@@ -110,24 +110,24 @@ export class S3UploadComponent implements OnInit, OnDestroy
   // ---- NOTE: Emitted ------------------------------------------------------------
   // -------------------------------------------------------------------------------
 
-  private handleFileUploadEvent(fileObject : FileObject) : void
-  {
-    if (fileObject.status === FileObjectStatus.UPLOADED)
-    {
-      // this.getFileVersion(this.localeControl.value);
-      this.snackBar.open(this.translate.instant('SUCCESS_UPLOAD_PDF'), 'x');
-    }
+  // private handleFileUploadEvent(fileObject : FileObject) : void
+  // {
+  //   if (fileObject.status === FileObjectStatus.UPLOADED)
+  //   {
+  //     // this.getFileVersion(this.localeControl.value);
+  //     this.snackBar.open(this.translate.instant('SUCCESS_UPLOAD_PDF'), 'x');
+  //   }
 
-    if (fileObject.status === FileObjectStatus.DELETED)
-    {
-      for (let i = 0; i < this.files.length; i++)
-      {
-        if (this.files[i] === fileObject)
-        {
-          this.files.splice(i, 1);
-        }
-      }
-    }
-  }
+  //   if (fileObject.status === FileObjectStatus.DELETED)
+  //   {
+  //     for (let i = 0; i < this.files.length; i++)
+  //     {
+  //       if (this.files[i] === fileObject)
+  //       {
+  //         this.files.splice(i, 1);
+  //       }
+  //     }
+  //   }
+  // }
 
 }
