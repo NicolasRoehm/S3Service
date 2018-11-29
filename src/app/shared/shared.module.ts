@@ -85,8 +85,7 @@ export class MaterialModule { }
     MaterialModule,
 
     // External modules
-    TranslateModule,
-    LoginFormModule
+    TranslateModule
   ],
   declarations    : [],
   entryComponents : [],
@@ -102,8 +101,7 @@ export class MaterialModule { }
     MaterialModule,
 
     // External modules
-    TranslateModule,
-    LoginFormModule
+    TranslateModule
   ]
 })
 export class SharedModule { }

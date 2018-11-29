@@ -11,7 +11,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "types": ["node", "gapi", "gapi.auth2"],
+    "types": ["node"],
     "lib": [
       "dom",
       "es2015"
