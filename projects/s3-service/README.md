@@ -170,8 +170,8 @@ this.s3Helper.s3Service.copyFolderObjects('from-folder', 'to-folder').then(res =
 
 If it's an empty Angular application :
 
-- Add `"types": ["node"]` to the [tsconfig.app.json](https://github.com/Caliatys/CognitoService/blob/master/src/tsconfig.app.json) file that the angular-cli creates in the `src` directory.
-- Add `(window as any).global = window;` to the [polyfills.ts](https://github.com/Caliatys/CognitoService/blob/master/src/polyfills.ts) file, as mentioned here : [angular/angular-cli#9827 (comment)](https://github.com/angular/angular-cli/issues/9827#issuecomment-386154063)
+- Add `"types": ["node"]` to the [tsconfig.app.json](https://github.com/Caliatys/S3Service/blob/master/src/tsconfig.app.json) file that the angular-cli creates in the `src` directory.
+- Add `(window as any).global = window;` to the [polyfills.ts](https://github.com/Caliatys/S3Service/blob/master/src/polyfills.ts) file, as mentioned here : [angular/angular-cli#9827 (comment)](https://github.com/angular/angular-cli/issues/9827#issuecomment-386154063)
 
 ## Roadmap
 
@@ -188,4 +188,4 @@ Contributions are welcome, please open an issue and preferably submit a pull req
 
 ## Development
 
-CognitoService is built with [Angular CLI](https://github.com/angular/angular-cli).
+S3Service is built with [Angular CLI](https://github.com/angular/angular-cli).
