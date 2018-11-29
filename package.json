@@ -1,11 +1,12 @@
 {
-  "name": "s3-service-app",
-  "description": "Typescript service for AWS S3 with Angular",
-  "version": "1.0.1",
-  "author": "Nicolas Roehm <nicolas.roehm@gmail.com>",
-  "license": "MIT",
-  "private": false,
-  "keywords": [
+  "name"        : "s3-service-app",
+  "description" : "Typescript service for AWS S3 with Angular",
+  "version"     : "1.0.1",
+  "author"      : "Nicolas Roehm <nicolas.roehm@gmail.com>",
+  "license"     : "MIT",
+  "homepage"    : "https://github.com/Caliatys/S3Service#readme",
+  "private"     : false,
+  "keywords"    : [
     "aws",
     "s3",
     "bucket",
@@ -14,22 +15,22 @@
     "typescript",
     "javascript"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Caliatys/S3Service.git"
+  "repository" : {
+    "type" : "git",
+    "url"  : "git+https://github.com/Caliatys/S3Service.git"
   },
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "bar": "ng build --prod s3-service && ng s --port=4200",
-    "build_lib": "ng build --prod s3-service",
-    "npm_pack": "cd dist/s3-service && npm pack",
-    "package": "npm run build_lib && npm run npm_pack",
-    "npm_publish": "npm run package && cd dist/s3-service && npm publish --access=public"
+    "ng"          : "ng",
+    "start"       : "ng serve",
+    "build"       : "ng build",
+    "test"        : "ng test",
+    "lint"        : "ng lint",
+    "e2e"         : "ng e2e",
+    "bar"         : "ng build --prod s3-service && ng s --port=4200",
+    "build_lib"   : "ng build --prod s3-service",
+    "npm_pack"    : "cd dist/s3-service && npm pack",
+    "package"     : "npm run build_lib && npm run npm_pack",
+    "npm_publish" : "npm run package && cd dist/s3-service && npm publish --access=public"
   },
   "dependencies": {
     "@angular/animations": "^6.0.3",
@@ -43,16 +44,9 @@
     "@angular/platform-browser": "^6.0.3",
     "@angular/platform-browser-dynamic": "^6.0.3",
     "@angular/router": "^6.0.3",
-    "@caliatys/login-form": "^2.1.4",
-    "@ng-idle/core": "^6.0.0-beta.3",
-    "@ng-idle/keepalive": "^6.0.0-beta.3",
     "@ngx-translate/core": "^10.0.2",
     "@ngx-translate/http-loader": "^3.0.1",
     "@types/aws-sdk": "^2.7.0",
-    "@types/gapi": "0.0.35",
-    "@types/gapi.auth2": "0.0.47",
-    "amazon-cognito-identity-js": "^2.0.6",
-    "angular2-moment": "^1.9.0",
     "aws-sdk": "^2.247.1",
     "bootstrap": "^4.1.3",
     "core-js": "^2.5.4",

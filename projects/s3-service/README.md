@@ -73,13 +73,84 @@ import { S3Helper } from './shared/helpers/s3.helper';
 export class AppModule { }
 ```
 
+## Models
+
+### S3Object
+
+```typescript
+export class S3Object
+{
+  public Key       : string;
+  public Name      : string;
+  public Extension : string;
+  public Output    : AWS.S3.GetObjectOutput;
+  public Blob      : Blob;
+}
+```
+
 ## Methods
 
-WIP...
+### Get object
+Retrieves objects from Amazon S3.
+```typescript
+this.s3Helper.s3Service.getObject('objectKey.json').then(res => {}).catch(err => {});
+```
+
+### Put object
+Adds an object to a bucket.
+```typescript
+this.s3Helper.s3Service.putObject(item, 'objectKey.json').then(res => {}).catch(err => {});
+```
+
+### Copy object
+Creates a copy of an object that is already stored in Amazon S3.
+```typescript
+this.s3Helper.s3Service.copyObject('objectKey.json', 'newKey.json').then(res => {}).catch(err => {});
+```
+
+### Delete object
+```typescript
+this.s3Helper.s3Service.deleteObject('objectKey.json').then(res => {}).catch(err => {});
+```
+
+### Delete objects
+```typescript
+let del : AWS.S3.Delete;
+del.Objects = [];
+del.Objects.push({ Key : 'objectKey1.json' });
+del.Objects.push({ Key : 'objectKey2.json', VersionId : 'XXXXXXXXX' });
+this.s3Helper.s3Service.deleteObjects(del).then(res => {}).catch(err => {});
+```
+
+### List objects
+```typescript
+this.s3Helper.s3Service.listObjects().then(res => {}).catch(err => {});
+// or
+this.s3Helper.s3Service.listObjectsV2().then(res => {}).catch(err => {});
+```
+
+### List object versions
+```typescript
+this.s3Helper.s3Service.listObjectVersions('objectPrefix').then(res => {}).catch(err => {});
+```
+
+### Restore object
+```typescript
+this.s3Helper.s3Service.restoreObject('objectKey.json').then(res => {}).catch(err => {});
+```
 
 ## Helpers
 
-WIP...
+### Get folder objects
+```typescript
+this.s3Helper.s3Service.getFolderObjects('image-folder').then(res => {}).catch(err => {});
+```
+
+### Copy folder objects
+
+```typescript
+this.s3Helper.s3Service.copyFolderObjects('from-folder', 'to-folder').then(res => {}).catch(err => {});
+```
 
 ## Dependencies
 
@@ -109,7 +180,7 @@ If it's an empty Angular application :
 - Methods & helpers
 
 ### Planning
-- Upload method
+- Upload methods
 
 ### Contributions
 

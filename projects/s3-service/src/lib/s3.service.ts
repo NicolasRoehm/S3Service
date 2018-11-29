@@ -8,12 +8,15 @@ import { Observable } from 'rxjs';
 import { from }       from 'rxjs';
 import * as AWS       from 'aws-sdk';
 
+// Models
+import { S3Object }   from './models/s3-object.model';
+
 @Injectable({
   providedIn : 'root'
 })
 export class S3Service
 {
-  private s3     : AWS.S3;
+  public  s3     : AWS.S3;
   private bucket : string;
 
   constructor
@@ -33,10 +36,10 @@ export class S3Service
    *
    * @param key - string
    * @param customParams - AWS.S3.GetObjectRequest = null
-   * @returns Observable<any>
+   * @returns Observable<AWS.AWSError | S3Object>
    * @memberof S3Service
    */
-  public getObject(key : string, customParams : AWS.S3.GetObjectRequest = null) : Observable<any>
+  public getObject(key : string, customParams : AWS.S3.GetObjectRequest = null) : Promise<AWS.AWSError | S3Object>
   {
     let defaultParams : AWS.S3.GetObjectRequest = {
       Bucket : this.bucket,
@@ -44,7 +47,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.getObject(params, (err : AWS.AWSError, data : AWS.S3.GetObjectOutput) =>
       {
@@ -53,11 +56,10 @@ export class S3Service
           console.error('S3Service : getObject -> getObject', err);
           return reject(err);
         }
-        // var ext : string = Document.getFileExtension(objectKey);
-        // var blob = new Blob(data.Body as any, { type: MimeHelper.lookup(ext) });
-        return resolve(); // blob
+        let s3Object = this.upgradeS3Object(key, data);
+        return resolve(s3Object);
       });
-    }));
+    });
   }
 
   /** Adds an object to a bucket.
@@ -65,10 +67,10 @@ export class S3Service
    * @param body - AWS.S3.Body
    * @param key - string
    * @param customParams - AWS.S3.PutObjectRequest = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.PutObjectOutput>
    * @memberof S3Service
    */
-  public putObject(body : AWS.S3.Body, key : string, customParams : AWS.S3.PutObjectRequest = null) : Observable<any>
+  public putObject(body : AWS.S3.Body, key : string, customParams : AWS.S3.PutObjectRequest = null) : Promise<AWS.AWSError | AWS.S3.PutObjectOutput>
   {
     let defaultParams : AWS.S3.PutObjectRequest = {
       Bucket : this.bucket,
@@ -77,7 +79,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.putObject(params, (err : AWS.AWSError, data : AWS.S3.PutObjectOutput) =>
       {
@@ -88,25 +90,23 @@ export class S3Service
         }
         return resolve(data);
       });
-    }));
+    });
   }
 
   /** Creates a copy of an object that is already stored in Amazon S3.
    *
-   * @param file - any
-   * @param copyFrom - string
-   * @param copyTo - string
+   * @param objectKey - string
+   * @param newKey - string
    * @param customParams - AWS.S3.CopyObjectRequest = null
-   * @returns Promise<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.CopyObjectOutput>
    * @memberof S3Service
    */
-  public copyObject(file : any, copyFrom : string, copyTo : string, customParams : AWS.S3.CopyObjectRequest = null) : Promise<any>
+  public copyObject(objectKey : string, newKey : string, customParams : AWS.S3.CopyObjectRequest = null) : Promise<AWS.AWSError | AWS.S3.CopyObjectOutput>
   {
-    // TODO: Check the path / Ask for it ?
     let defaultParams : AWS.S3.CopyObjectRequest = {
       Bucket     : this.bucket,
-      CopySource : this.bucket + '/' + file.Key,
-      Key        : file.Key.replace(copyFrom, copyTo)
+      CopySource : this.bucket + '/' + objectKey,
+      Key        : newKey
     };
     let params = Object.assign(defaultParams, customParams);
 
@@ -119,7 +119,6 @@ export class S3Service
           console.error('S3Service : copyObject -> copyObject', err);
           return reject(err);
         }
-        // console.log('Copied: ', file.Key);
         return resolve(data);
       });
     });
@@ -130,10 +129,10 @@ export class S3Service
    *
    * @param key - string
    * @param customParams - AWS.S3.DeleteObjectRequest = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.DeleteObjectOutput>
    * @memberof S3Service
    */
-  public deleteObject(key : string, customParams : AWS.S3.DeleteObjectRequest = null) : Observable<any>
+  public deleteObject(key : string, customParams : AWS.S3.DeleteObjectRequest = null) : Promise<AWS.AWSError | AWS.S3.DeleteObjectOutput>
   {
     let defaultParams : AWS.S3.DeleteObjectRequest = {
       Bucket : this.bucket,
@@ -141,7 +140,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.deleteObject(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectOutput) =>
       {
@@ -152,7 +151,7 @@ export class S3Service
         }
         return resolve(data);
       });
-    }));
+    });
   }
 
   /** This operation enables you to delete multiple objects from a bucket using a single HTTP request.
@@ -160,10 +159,10 @@ export class S3Service
    *
    * @param del - AWS.S3.Delete
    * @param customParams - AWS.S3.DeleteObjectsRequest = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.DeleteObjectsOutput>
    * @memberof S3Service
    */
-  public deleteObjects(del : AWS.S3.Delete, customParams : AWS.S3.DeleteObjectsRequest = null) : Observable<any>
+  public deleteObjects(del : AWS.S3.Delete, customParams : AWS.S3.DeleteObjectsRequest = null) : Promise<AWS.AWSError | AWS.S3.DeleteObjectsOutput>
   {
     let defaultParams : AWS.S3.DeleteObjectsRequest = {
       Bucket : this.bucket,
@@ -171,7 +170,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.deleteObjects(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectsOutput) =>
       {
@@ -182,24 +181,24 @@ export class S3Service
         }
         return resolve(data);
       });
-    }));
+    });
   }
 
   /** Returns some or all (up to 1000) of the objects in a bucket.
    * You can use the request parameters as selection criteria to return a subset of the objects in a bucket.
    *
    * @param customParams - AWS.S3.ListObjectsRequest = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.ListObjectsOutput>
    * @memberof S3Service
    */
-  public listObjects(customParams : AWS.S3.ListObjectsRequest = null) : Observable<any>
+  public listObjects(customParams : AWS.S3.ListObjectsRequest = null) : Promise<AWS.AWSError | AWS.S3.ListObjectsOutput>
   {
     let defaultParams : AWS.S3.ListObjectsRequest = {
       Bucket : this.bucket
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.listObjects(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsOutput) =>
       {
@@ -210,7 +209,7 @@ export class S3Service
         }
         return resolve(data);
       });
-    }));
+    });
   }
 
   /** Returns some or all (up to 1000) of the objects in a bucket.
@@ -218,17 +217,17 @@ export class S3Service
    * Note: ListObjectsV2 is the revised List Objects API and we recommend you use this revised API for new application development.
    *
    * @param customParams - AWS.S3.ListObjectsV2Request = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.ListObjectsV2Output>
    * @memberof S3Service
    */
-  public listObjectsV2(customParams : AWS.S3.ListObjectsV2Request = null) : Observable<any>
+  public listObjectsV2(customParams : AWS.S3.ListObjectsV2Request = null) : Promise<AWS.AWSError | AWS.S3.ListObjectsV2Output>
   {
     let defaultParams : AWS.S3.ListObjectsV2Request = {
       Bucket : this.bucket
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.listObjectsV2(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsV2Output) =>
       {
@@ -239,17 +238,17 @@ export class S3Service
         }
         return resolve(data);
       });
-    }));
+    });
   }
 
   /** Returns metadata about all of the versions of objects in a bucket.
    *
    * @param prefix - string
    * @param customParams - AWS.S3.ListObjectVersionsRequest = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.ListObjectVersionsOutput>
    * @memberof S3Service
    */
-  public listObjectVersions(prefix : string, customParams : AWS.S3.ListObjectVersionsRequest = null) : Observable<any>
+  public listObjectVersions(prefix : string, customParams : AWS.S3.ListObjectVersionsRequest = null) : Promise<AWS.AWSError | AWS.S3.ListObjectVersionsOutput>
   {
     let defaultParams : AWS.S3.ListObjectVersionsRequest = {
       Bucket : this.bucket,
@@ -257,7 +256,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.listObjectVersions(params, (err : AWS.AWSError, data : AWS.S3.ListObjectVersionsOutput) =>
       {
@@ -270,17 +269,17 @@ export class S3Service
         // versions = ArrayTyper.asArray(S3Item, data.Versions);
         return resolve(data); // versions
       });
-    }));
+    });
   }
 
   /** Restores an archived copy of an object back into Amazon S3
    *
    * @param key - string
    * @param customParams - AWS.S3.RestoreObjectRequest = null
-   * @returns Observable<any>
+   * @returns Promise<AWS.AWSError | AWS.S3.RestoreObjectOutput>
    * @memberof S3Service
    */
-  public restoreObject(key : string, customParams : AWS.S3.RestoreObjectRequest = null) : Observable<any>
+  public restoreObject(key : string, customParams : AWS.S3.RestoreObjectRequest = null) : Promise<AWS.AWSError | AWS.S3.RestoreObjectOutput>
   {
     let defaultParams : AWS.S3.RestoreObjectRequest = {
       Bucket : this.bucket,
@@ -288,7 +287,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
       this.s3.restoreObject(params, (err : AWS.AWSError, data : AWS.S3.RestoreObjectOutput) =>
       {
@@ -299,7 +298,7 @@ export class S3Service
         }
         return resolve(data);
       });
-    }));
+    });
   }
 
   // !SECTION
@@ -351,37 +350,108 @@ export class S3Service
   // SECTION: Helpers --------------------------------------------------------------------------
   // -------------------------------------------------------------------------------------------
 
-  /**
+  public upgradeS3Object(key : string, output : AWS.S3.GetObjectOutput) : S3Object
+  {
+    let object    = new S3Object();
+    let name      = S3Object.getFileName(key);
+    let extension = S3Object.getFileExtension(key);
+    let blob      = new Blob(output.Body as any, { type : output.ContentType });
+
+    object.Key       = key;
+    object.Name      = name;
+    object.Extension = extension;
+    object.Output    = output;
+    object.Blob      = blob;
+
+    return object;
+  }
+
+  // !SECTION
+
+  // -------------------------------------------------------------------------------------------
+  // SECTION: S3 Helpers -----------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------
+
+  /** Get the objects of a folder.
+   *
+   * @param folder - string
+   * @returns Promise<(AWS.AWSError | S3Object)[]>
+   * @memberof S3Service
+   */
+  public getFolderObjects(folder : string) : Promise<(AWS.AWSError | S3Object)[]>
+  {
+    let params : AWS.S3.ListObjectsV2Request = {
+      Bucket   : this.bucket,
+      Prefix   : folder
+    };
+
+    return new Promise((resolve, reject) =>
+    {
+      this.listObjectsV2(params).then((data : AWS.S3.ListObjectsV2Output) =>
+      {
+        if(data.Contents.length)
+        {
+          let promises : Promise<AWS.AWSError | S3Object>[] = [];
+
+          for(let file of data.Contents)
+          {
+            let promise = this.getObject(file.Key);
+            promises.push(promise);
+          }
+
+          Promise.all(promises).then(res =>
+          {
+            return resolve(res);
+          },
+          err =>
+          {
+            return reject(err);
+          });
+        }
+        else
+        {
+          console.error('S3Service : getFolderObjects -> listObjectsV2', 'Nothing found');
+          return reject();
+        }
+      }).catch((err : AWS.AWSError) => {
+        console.error('S3Service : getFolderObjects -> listObjectsV2', err);
+        return reject(err);
+      });
+    });
+  }
+
+  /** Copy a folder with its objects.
    *
    * @param copyFrom - string
    * @param copyTo - string
-   * @returns Observable<any>
+   * @returns Promise<(AWS.AWSError | AWS.S3.CopyObjectOutput)[]>
    * @memberof S3Service
    */
-  public copyFolderWithObjects(copyFrom : string, copyTo : string) : Observable<any>
+  public copyFolderObjects(copyFrom : string, copyTo : string) : Promise<(AWS.AWSError | AWS.S3.CopyObjectOutput)[]>
   {
     let params : AWS.S3.ListObjectsV2Request = {
       Bucket : this.bucket,
       Prefix : copyFrom
     };
 
-    return from(new Promise((resolve, reject) =>
+    return new Promise((resolve, reject) =>
     {
-      this.listObjectsV2(params).subscribe(data =>
+      this.listObjectsV2(params).then((data : AWS.S3.ListObjectsV2Output) =>
       {
         if(data.Contents.length)
         {
-          let promises : Promise<any>[] = [];
+          let promises : Promise<AWS.AWSError | AWS.S3.CopyObjectOutput>[] = [];
 
           for(let file of data.Contents)
           {
-            let promise = this.copyObject(file, copyFrom, copyTo);
+            let newKey  = copyTo + '/' + file.Key;
+            let promise = this.copyObject(file.Key, newKey);
             promises.push(promise);
           }
 
-          Promise.all(promises).then(data =>
+          Promise.all(promises).then(res =>
           {
-            return resolve(data);
+            return resolve(res);
           },
           err =>
           {
@@ -393,11 +463,11 @@ export class S3Service
           console.error('S3Service : copyFolder -> listObjectsV2', 'Nothing found');
           return reject();
         }
-      }, err => {
-        console.error('S3Service : copyFolderWithObjects -> listObjectsV2', err);
+      }).catch((err : AWS.AWSError) => {
+        console.error('S3Service : copyFolderObjects -> listObjectsV2', err);
         return reject(err);
       });
-    }));
+    });
   }
 
   // !SECTION

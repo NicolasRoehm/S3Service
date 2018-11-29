@@ -48,35 +48,35 @@ export class AppComponent implements OnInit, OnDestroy
 
   public upload() : void
   {
-    this.s3Helper.s3Service.upload(null, this.handleS3UploadProgress());
+    // this.s3Helper.s3Service.upload(null, this.handleS3UploadProgress());
   }
 
-  private handleS3UploadProgress() : any
-  {
-    return (error : Error, progress : number, speed : number) =>
-    {
-      if (error)
-      {
-        this.progress          = 0;
-        this.speed             = 0;
-        this.uploadError       = error.message;
-        this.fileObject.status = FileObjectStatus.FAILED;
-      }
-      else
-      {
-        this.progress = progress || this.progress;
-        this.speed    = speed    || this.speed;
-        if (this.progress === 100)
-        {
-          if(this.fileObject.status !== FileObjectStatus.UPLOADED)
-          {
-            this.fileObject.status = FileObjectStatus.UPLOADED;
-            this.s3UploadService.publishFileUploadEvent(this.fileObject);
-          }
-          this.fileObject.status = FileObjectStatus.UPLOADED;
-        }
-      }
-    };
-  }
+  // private handleS3UploadProgress() : any
+  // {
+  //   return (error : Error, progress : number, speed : number) =>
+  //   {
+  //     if (error)
+  //     {
+  //       this.progress          = 0;
+  //       this.speed             = 0;
+  //       this.uploadError       = error.message;
+  //       this.fileObject.status = FileObjectStatus.FAILED;
+  //     }
+  //     else
+  //     {
+  //       this.progress = progress || this.progress;
+  //       this.speed    = speed    || this.speed;
+  //       if (this.progress === 100)
+  //       {
+  //         if(this.fileObject.status !== FileObjectStatus.UPLOADED)
+  //         {
+  //           this.fileObject.status = FileObjectStatus.UPLOADED;
+  //           this.s3UploadService.publishFileUploadEvent(this.fileObject);
+  //         }
+  //         this.fileObject.status = FileObjectStatus.UPLOADED;
+  //       }
+  //     }
+  //   };
+  // }
 
 }

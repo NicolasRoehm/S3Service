@@ -36,7 +36,6 @@ import { MatSnackBarModule }        from '@angular/material';
 // import { MatExpansionModule }       from '@angular/material';
 
 // External modules
-import { LoginFormModule }         from '@caliatys/login-form';
 import { TranslateModule }         from '@ngx-translate/core';
 
 // NgModule that includes all Material modules that are required to serve the app.

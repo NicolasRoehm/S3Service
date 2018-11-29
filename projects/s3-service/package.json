@@ -4,6 +4,7 @@
   "version"     : "1.0.1",
   "author"      : "Nicolas Roehm <nicolas.roehm@gmail.com>",
   "license"     : "MIT",
+  "homepage"    : "https://github.com/Caliatys/S3Service#readme",
   "private"     : false,
   "keywords"    : [
     "aws",
