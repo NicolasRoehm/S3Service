@@ -1,7 +1,7 @@
 {
   "name"        : "@caliatys/s3-service",
   "description" : "Typescript service for AWS S3 with Angular",
-  "version"     : "1.0.3",
+  "version"     : "1.0.4",
   "author"      : "Nicolas Roehm <nicolas.roehm@gmail.com>",
   "license"     : "MIT",
   "homepage"    : "https://github.com/Caliatys/S3Service#readme",

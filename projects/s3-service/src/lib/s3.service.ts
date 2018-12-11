@@ -24,7 +24,6 @@ export class S3Service
     @Inject('s3Const') @Optional() public s3Const : any
   )
   {
-    this.s3     = new AWS.S3();
     this.bucket = s3Const.bucket;
   }
 
@@ -49,6 +48,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.getObject(params, (err : AWS.AWSError, data : AWS.S3.GetObjectOutput) =>
       {
         if(err)
@@ -81,6 +81,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.putObject(params, (err : AWS.AWSError, data : AWS.S3.PutObjectOutput) =>
       {
         if(err)
@@ -112,6 +113,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.copyObject(params, (err : AWS.AWSError, data : AWS.S3.CopyObjectOutput) =>
       {
         if(err)
@@ -142,6 +144,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.deleteObject(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectOutput) =>
       {
         if(err)
@@ -172,6 +175,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.deleteObjects(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectsOutput) =>
       {
         if(err)
@@ -200,6 +204,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.listObjects(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsOutput) =>
       {
         if(err)
@@ -229,6 +234,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.listObjectsV2(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsV2Output) =>
       {
         if(err)
@@ -258,6 +264,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.listObjectVersions(params, (err : AWS.AWSError, data : AWS.S3.ListObjectVersionsOutput) =>
       {
         if(err)
@@ -289,6 +296,7 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
+      this.s3 = new AWS.S3();
       this.s3.restoreObject(params, (err : AWS.AWSError, data : AWS.S3.RestoreObjectOutput) =>
       {
         if(err)
@@ -328,6 +336,7 @@ export class S3Service
     };
     let params = Object.assign(defaultParams, customParams);
 
+    this.s3 = new AWS.S3();
     let managedUpload = this.s3.upload(params, options);
     managedUpload.on('httpUploadProgress', this.handleS3UploadProgress(progressCallback));
     managedUpload.send(this.handleS3UploadComplete(progressCallback));
