@@ -364,7 +364,7 @@ export class S3Service
     let object    = new S3Object();
     let name      = S3Object.getFileName(key);
     let extension = S3Object.getFileExtension(key);
-    let blob      = new Blob(output.Body as any, { type : output.ContentType });
+    let blob      = new Blob([output.Body as any], { type : output.ContentType });
 
     object.Key       = key;
     object.Name      = name;
