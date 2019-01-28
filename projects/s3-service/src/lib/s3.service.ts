@@ -51,13 +51,13 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.getObject(params, (err : AWS.AWSError, data : AWS.S3.GetObjectOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : getObject -> getObject', err);
-          return reject(err);
+          reject(err);
         }
         let s3Object = this.upgradeS3Object(key, data);
-        return resolve(s3Object);
+        resolve(s3Object);
       });
     });
   }
@@ -84,12 +84,12 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.putObject(params, (err : AWS.AWSError, data : AWS.S3.PutObjectOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : putObject -> putObject', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
       });
     });
   }
@@ -116,12 +116,12 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.copyObject(params, (err : AWS.AWSError, data : AWS.S3.CopyObjectOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : copyObject -> copyObject', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
       });
     });
   }
@@ -147,12 +147,12 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.deleteObject(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : deleteObject -> deleteObject', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
       });
     });
   }
@@ -178,12 +178,37 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.deleteObjects(params, (err : AWS.AWSError, data : AWS.S3.DeleteObjectsOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : deleteObjects -> deleteObjects', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
+      });
+    });
+  }
+
+  public listAllObjects(params : AWS.S3.ListObjectsV2Request = null, output : AWS.S3.Object[] = []) : Promise<AWS.AWSError | AWS.S3.Object[]>
+  {
+    let defaultParams : AWS.S3.ListObjectsRequest = {
+      Bucket : this.bucket
+    };
+    params = Object.assign(defaultParams, params);
+
+    return new Promise((resolve, reject) =>
+    {
+      this.listObjectsV2(params).then((data : AWS.S3.ListObjectsV2Output) =>
+      {
+        output.push(...data.Contents);
+        if (!data.IsTruncated)
+          resolve(output);
+        let nextParams = Object.assign(params, { ContinuationToken : data.NextContinuationToken });
+        resolve(this.listAllObjects(nextParams, output));
+      })
+      .catch((err : AWS.AWSError) =>
+      {
+        console.error('S3Service : listObjectsV2 -> listAll', err);
+        reject(err);
       });
     });
   }
@@ -207,12 +232,12 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.listObjects(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : listObjects -> listObjects', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
       });
     });
   }
@@ -237,12 +262,12 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.listObjectsV2(params, (err : AWS.AWSError, data : AWS.S3.ListObjectsV2Output) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : listObjectsV2 -> listObjectsV2', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
       });
     });
   }
@@ -267,14 +292,14 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.listObjectVersions(params, (err : AWS.AWSError, data : AWS.S3.ListObjectVersionsOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : listObjectVersions -> listObjectVersions', err);
-          return reject(err);
+          reject(err);
         }
         // let versions : S3Item[] = [];
         // versions = ArrayTyper.asArray(S3Item, data.Versions);
-        return resolve(data); // versions
+        resolve(data); // versions
       });
     });
   }
@@ -299,12 +324,12 @@ export class S3Service
       this.s3 = new AWS.S3();
       this.s3.restoreObject(params, (err : AWS.AWSError, data : AWS.S3.RestoreObjectOutput) =>
       {
-        if(err)
+        if (err)
         {
           console.error('S3Service : restoreObject -> restoreObject', err);
-          return reject(err);
+          reject(err);
         }
-        return resolve(data);
+        resolve(data);
       });
     });
   }
@@ -396,35 +421,35 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
-      this.listObjectsV2(params).then((data : AWS.S3.ListObjectsV2Output) =>
+      this.listAllObjects(params).then((contents : AWS.S3.Object[]) =>
       {
-        if(data.Contents.length)
+        if (!contents)
         {
-          let promises : Promise<AWS.AWSError | S3Object>[] = [];
-
-          for(let file of data.Contents)
-          {
-            let promise = this.getObject(file.Key);
-            promises.push(promise);
-          }
-
-          Promise.all(promises).then(res =>
-          {
-            return resolve(res);
-          },
-          err =>
-          {
-            return reject(err);
-          });
+          let error = 'Nothing found';
+          console.error('S3Service : getFolderObjects -> listObjectsV2', error);
+          reject(error);
         }
-        else
+
+        let promises : Promise<AWS.AWSError | S3Object>[] = [];
+
+        for (let file of contents)
         {
-          console.error('S3Service : getFolderObjects -> listObjectsV2', 'Nothing found');
-          return reject();
+          let promise = this.getObject(file.Key);
+          promises.push(promise);
         }
-      }).catch((err : AWS.AWSError) => {
+
+        Promise.all(promises).then(res =>
+        {
+          resolve(res);
+        },
+        err =>
+        {
+          reject(err);
+        });
+      }).catch((err : AWS.AWSError) =>
+      {
         console.error('S3Service : getFolderObjects -> listObjectsV2', err);
-        return reject(err);
+        reject(err);
       });
     });
   }
@@ -445,36 +470,36 @@ export class S3Service
 
     return new Promise((resolve, reject) =>
     {
-      this.listObjectsV2(params).then((data : AWS.S3.ListObjectsV2Output) =>
+      this.listAllObjects(params).then((contents : AWS.S3.Object[]) =>
       {
-        if(data.Contents.length)
+        if (!contents)
         {
-          let promises : Promise<AWS.AWSError | AWS.S3.CopyObjectOutput>[] = [];
-
-          for(let file of data.Contents)
-          {
-            let newKey  = copyTo + '/' + file.Key;
-            let promise = this.copyObject(file.Key, newKey);
-            promises.push(promise);
-          }
-
-          Promise.all(promises).then(res =>
-          {
-            return resolve(res);
-          },
-          err =>
-          {
-            return reject(err);
-          });
+          let error = 'Nothing found';
+          console.error('S3Service : copyFolder -> listObjectsV2', error);
+          reject(error);
         }
-        else
+
+        let promises : Promise<AWS.AWSError | AWS.S3.CopyObjectOutput>[] = [];
+
+        for (let file of contents)
         {
-          console.error('S3Service : copyFolder -> listObjectsV2', 'Nothing found');
-          return reject();
+          let newKey  = copyTo + '/' + file.Key;
+          let promise = this.copyObject(file.Key, newKey);
+          promises.push(promise);
         }
-      }).catch((err : AWS.AWSError) => {
+
+        Promise.all(promises).then(res =>
+        {
+          resolve(res);
+        },
+        err =>
+        {
+          reject(err);
+        });
+      }).catch((err : AWS.AWSError) =>
+      {
         console.error('S3Service : copyFolderObjects -> listObjectsV2', err);
-        return reject(err);
+        reject(err);
       });
     });
   }
@@ -501,7 +526,7 @@ export class S3Service
     {
       let currentTime = new Date().getTime();
       let timeElapsedInSeconds = (currentTime - uploadStartTime) / 1000;
-      if(timeElapsedInSeconds > 0)
+      if (timeElapsedInSeconds > 0)
       {
         let speed    = (progressEvent.loaded - uploadedBytes) / timeElapsedInSeconds;
         let progress = Math.floor((progressEvent.loaded * 100) / progressEvent.total);
@@ -522,7 +547,7 @@ export class S3Service
   {
     return (error : Error, data : AWS.S3.ManagedUpload.SendData) =>
     {
-      if(error)
+      if (error)
         progressCallback(error, undefined, undefined);
       else
         progressCallback(error, 100, undefined);
